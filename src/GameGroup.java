@@ -48,13 +48,13 @@ public class GameGroup extends Thread {
 
 		//Position the two players - Note, we never use	the colors here
 		p = emptySpot();
-		blue = new Player(p.x, p.y, (int)(4*Math.random()), null);
+		blue = new Player(p.x, p.y, (int)(4*Math.random()), null, null);
 
 		// We also need to mark each player's spot in the grid, so we'll
 		// know it's not empty
 		grid[p.x][p.y] = 3;
 		p = emptySpot();
-		red = new Player(p.x, p.y, (int)(4*Math.random()), null);
+		red = new Player(p.x, p.y, (int)(4*Math.random()), null, null);
 		grid[p.x][p.y] = 3;
 
 		//Send each player the config.

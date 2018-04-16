@@ -16,6 +16,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -117,7 +118,8 @@ public class Grab extends Application implements Runnable {
 			} else if (cmd.equals("blue")) {
 				try {
 					if (blue == null) {
-						blue = new Player(0, 0, 0, Color.BLUE);
+					    Image image = new Image("p1_0.png");
+						blue = new Player(0, 0, 0, Color.BLUE, image);
 						//blue = new Player(0, 0, 0, "p1");
 					}
 					blue.x = Integer.valueOf(words[1]).intValue();
@@ -130,7 +132,8 @@ public class Grab extends Application implements Runnable {
 			} else if (cmd.equals("red")) {
 				try {
 					if (red == null) {
-						red = new Player(0, 0, 0, Color.RED);
+						Image image2 = new Image("p2_0.png");
+						red = new Player(0, 0, 0, Color.RED, image2);
 						//red = new Player(0, 0, 0, "p2");
 					}
 					red.x = Integer.valueOf(words[1]).intValue();
