@@ -7,6 +7,8 @@ public class GameGroup extends Thread {
 	final int SIZE=2;
 
 	int grid[][];  //map of the board
+	//int grabbed[][];	// map of grabbed coins
+	int coins;
 	public static final int GWD=12; // width
 	public static final int GHT=10; // and height of board
 	Player red, blue;  //The two players
@@ -15,8 +17,6 @@ public class GameGroup extends Thread {
 	// Init to 100 because 0 would ruin my coin-rendering logic (see Grab.java)
 	public static int     coin_x = 0;
 	public static int     coin_y = 0;
-	
-	public static int     coins = 0;
 
 	GameGroup ( Socket s ) {
 		arr = new GameClientThread[SIZE];
@@ -256,9 +256,8 @@ public class GameGroup extends Thread {
 	 */
 	public void removeCoin(int x, int y){
 		
-		grid[x][y] = 0;	// Make previous coin cell "walkable"
-		//grabbed(grid, x, y);	// Call to helper function below
-		//grabbed(grid, x, y);	// Call to helper function below
+		grid[x][y] = 0;			// Make previous coin cell "walkable"
+        grabbed(grid, x, y);	// Call to helper function below
 		
 	}
 	
@@ -268,8 +267,7 @@ public class GameGroup extends Thread {
 	public void grabbed(int grid[][], int x, int y){
 		output( "grabbed x y: " + Grab.grabbed[x][y]);
 		Grab.grabbed = grid;					// Store current array into 'grab' array
-		Grab.grabbed[x][y] = 3;					// Set coin cell to 3 for non-rendering (see Grab.java).
-		grid = Grab.grabbed;					// Store grid back
-		output("new grid x y: " + grid[x][y]);
+		Grab.grabbed[x][y] = 4;					// Set coin cell to 3 for non-rendering (see Grab.java).
+		output("new grabbed x=" + x + " y=" + y  + " = " + Grab.grabbed[x][y]);
 	}
 }

@@ -24,7 +24,7 @@ import java.io.*;
 
 public class Grab extends Application implements Runnable {
 	final String appName = "Grab";
-
+	
 	GraphicsContext gc; // declare here to use in handlers
 
 	/* the Thread */
@@ -32,6 +32,7 @@ public class Grab extends Application implements Runnable {
 
 	int grid[][] = new int[GameGroup.GWD][GameGroup.GHT]; // Game board
 	static int grabbed[][] = new int[GameGroup.GWD][GameGroup.GHT];
+	public static int coins;
 	public static final int CELLSIZE = 64;
 	public static final int WIDTH = GameGroup.GWD * CELLSIZE;
 	public static final int HEIGHT = GameGroup.GHT * CELLSIZE;
@@ -113,7 +114,7 @@ public class Grab extends Application implements Runnable {
 			} else if (cmd.equals("blue")) {
 				try {
 					if (blue == null)
-						blue = new Player(0, 0, 0, Color.BLUE);
+						blue = new Player(0, 0, 0, "p1");
 					blue.x = Integer.valueOf(words[1]).intValue();
 					blue.y = Integer.valueOf(words[2]).intValue();
 					blue.dir = Integer.valueOf(words[3]).intValue();
@@ -124,7 +125,7 @@ public class Grab extends Application implements Runnable {
 			} else if (cmd.equals("red")) {
 				try {
 					if (red == null)
-						red = new Player(0, 0, 0, Color.RED);
+						red = new Player(0, 0, 0, "p2");
 					red.x = Integer.valueOf(words[1]).intValue();
 					red.y = Integer.valueOf(words[2]).intValue();
 					red.dir = Integer.valueOf(words[3]).intValue();
@@ -134,7 +135,8 @@ public class Grab extends Application implements Runnable {
 				render(gc);
 			}
 		}
-	}
+		
+	}	// end run()
 
 	void fillGrid(String board) {
 		// Fill in the grid array with the values
@@ -184,6 +186,13 @@ public class Grab extends Application implements Runnable {
 			// Draw board
 			for (x = 0; x < GameGroup.GWD; x++)
 				for (y = 0; y < GameGroup.GHT; y++) {
+					
+					if(grabbed[x][y] == 4) {
+						System.out.println("PLEASE WHY");
+						gc.setFill(Color.BLUE);
+						gc.fillRect(CELLSIZE * x + 2, CELLSIZE * y + 2, CELLSIZE - 4, CELLSIZE - 4);
+					}
+					
 					if (grid[x][y] == 1) {
 						gc.setFill(Color.GRAY);
 						gc.fillRect(CELLSIZE * x, CELLSIZE * y, CELLSIZE - 1, CELLSIZE - 1);
@@ -191,11 +200,6 @@ public class Grab extends Application implements Runnable {
 					else if (grid[x][y] == 2 && grabbed[x][y] != 3) {
 						gc.setFill(Color.ORANGE);
 						gc.fillOval(CELLSIZE * x + 2, CELLSIZE * y + 2, CELLSIZE - 4, CELLSIZE - 4);
-					}
-					else if(grabbed[x][y] == 3) {
-						System.out.println("PLEASE WHY");
-						gc.setFill(Color.BLUE);
-						gc.fillRect(CELLSIZE * x + 2, CELLSIZE * y + 2, CELLSIZE - 4, CELLSIZE - 4);
 					}
 				}
 			gc.setStroke(Color.BLACK);
@@ -207,7 +211,7 @@ public class Grab extends Application implements Runnable {
 				red.render(gc);
 		}
 		gc.setFill(Color.BLACK);
-		gc.fillText("Coins left: "+GameGroup.coins, 50, HEIGHT -50);
+		gc.fillText("Coins picked up: "+coins, 50, HEIGHT -50);
 	}
 
 	public void tellServer(String msg) {
