@@ -32,7 +32,10 @@ public class Grab extends Application implements Runnable {
 
 	int grid[][] = new int[GameGroup.GWD][GameGroup.GHT]; // Game board
 	static int grabbed[][] = new int[GameGroup.GWD][GameGroup.GHT];
-	public static int coins;
+	public static int bcoins, rcoins, btnt = 4, rtnt = 4;
+	public static boolean b_no_tnt = false;
+
+	public static boolean r_no_tnt = false;
 	public static final int CELLSIZE = 64;
 	public static final int WIDTH = GameGroup.GWD * CELLSIZE;
 	public static final int HEIGHT = GameGroup.GHT * CELLSIZE;
@@ -113,8 +116,10 @@ public class Grab extends Application implements Runnable {
 				my_name = words[1];
 			} else if (cmd.equals("blue")) {
 				try {
-					if (blue == null)
-						blue = new Player(0, 0, 0, "p1");
+					if (blue == null) {
+						blue = new Player(0, 0, 0, Color.BLUE);
+						//blue = new Player(0, 0, 0, "p1");
+					}
 					blue.x = Integer.valueOf(words[1]).intValue();
 					blue.y = Integer.valueOf(words[2]).intValue();
 					blue.dir = Integer.valueOf(words[3]).intValue();
@@ -124,8 +129,10 @@ public class Grab extends Application implements Runnable {
 				render(gc);
 			} else if (cmd.equals("red")) {
 				try {
-					if (red == null)
-						red = new Player(0, 0, 0, "p2");
+					if (red == null) {
+						red = new Player(0, 0, 0, Color.RED);
+						//red = new Player(0, 0, 0, "p2");
+					}
 					red.x = Integer.valueOf(words[1]).intValue();
 					red.y = Integer.valueOf(words[2]).intValue();
 					red.dir = Integer.valueOf(words[3]).intValue();
@@ -134,6 +141,53 @@ public class Grab extends Application implements Runnable {
 				; // if nonsense message, just ignore it
 				render(gc);
 			}
+			else if (cmd.equals("grabbed")) {
+				try {
+					grid[Integer.valueOf(words[2]).intValue()][Integer.valueOf(words[3]).intValue()] = 0;
+					if(words[1].equals("blue")) {
+						System.out.println("Got blue coins: ");
+						bcoins++;
+					}
+					else if(words[1].equals("red")) {
+						System.out.println("Got red coins: ");
+						rcoins++;
+					}
+				}
+				catch(Exception e) {
+				};
+				render(gc);
+			} // end grabbed command
+			else if (cmd.equals("blasted")) {
+			    try {
+					if(words[1].equals("blue") && !b_no_tnt) {
+							if(btnt < 1)
+								b_no_tnt = true;
+							if(!b_no_tnt) {
+								System.out.println("btnt--");
+								tellServer("tnt");
+								grid[Integer.valueOf(words[2]).intValue()][Integer.valueOf(words[3]).intValue()] = 0;
+								btnt--;
+							}
+					}
+					else if(words[1].equals("red") && !r_no_tnt) {
+							if(rtnt < 1)
+								r_no_tnt = true;
+							if(!r_no_tnt) {
+								System.out.println("rtnt--");
+								tellServer("tnt");
+								grid[Integer.valueOf(words[2]).intValue()][Integer.valueOf(words[3]).intValue()] = 0;
+								rtnt--;
+							}
+					}
+					else { // If either player has no TNT left after trying to blast, the cell should remain a wall.
+						System.out.println("No tnt on ?");
+						grid[Integer.valueOf(words[2]).intValue()][Integer.valueOf(words[3]).intValue()] = 1;
+					}
+				}	// end try
+				catch(Exception e) {
+				};
+				render(gc);
+			} // end blasted command
 		}
 		
 	}	// end run()
@@ -184,20 +238,15 @@ public class Grab extends Application implements Runnable {
 			gc.fillText("Waiting...", 50, 50);
 		} else {
 			// Draw board
+			gc.setFill(Color.WHITE);
+			gc.fillRect(0, 0, WIDTH, HEIGHT);
 			for (x = 0; x < GameGroup.GWD; x++)
 				for (y = 0; y < GameGroup.GHT; y++) {
-					
-					if(grabbed[x][y] == 4) {
-						System.out.println("PLEASE WHY");
-						gc.setFill(Color.BLUE);
-						gc.fillRect(CELLSIZE * x + 2, CELLSIZE * y + 2, CELLSIZE - 4, CELLSIZE - 4);
-					}
-					
 					if (grid[x][y] == 1) {
-						gc.setFill(Color.GRAY);
+						gc.setFill(Color.GREEN);
 						gc.fillRect(CELLSIZE * x, CELLSIZE * y, CELLSIZE - 1, CELLSIZE - 1);
 					}
-					else if (grid[x][y] == 2 && grabbed[x][y] != 3) {
+					else if (grid[x][y] == 2) {
 						gc.setFill(Color.ORANGE);
 						gc.fillOval(CELLSIZE * x + 2, CELLSIZE * y + 2, CELLSIZE - 4, CELLSIZE - 4);
 					}
@@ -210,8 +259,13 @@ public class Grab extends Application implements Runnable {
 			if (red != null)
 				red.render(gc);
 		}
-		gc.setFill(Color.BLACK);
-		gc.fillText("Coins picked up: "+coins, 50, HEIGHT -50);
+		gc.setFill(Color.BLUE);
+		gc.fillText("P1:\nCoins:"+bcoins, 50, 50);
+		gc.fillText("TNT:"+btnt, 50, 80);
+		
+		gc.setFill(Color.RED);
+		gc.fillText("P2:\nCoins:"+rcoins, WIDTH-100, 50);
+		gc.fillText("TNT:"+rtnt, WIDTH-100, 80);
 	}
 
 	public void tellServer(String msg) {

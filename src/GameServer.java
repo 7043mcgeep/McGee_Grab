@@ -63,7 +63,7 @@ class GameServer {
 			;
 		}
 	}
-
+ 
 	public void finalize() {
 		try {
 			servSock.close();

@@ -16,28 +16,30 @@ public class Player {
 	public static final int LEFT = 3;
 
 	// P1 images
-	static Image p1_0 = new Image("sprites/p1_0.gif");
-	static Image p1_1 = new Image("sprites/p1_1.gif");
-	static Image p1_2 = new Image("sprites/p1_2.gif");
-	static Image p1_3 = new Image("sprites/p1_3.gif");
+	//Image p1_0 = new Image("file:p1_0.png");
+	//static Image p1_1 = new Image("sprites/p1_1.png");
+	//static Image p1_2 = new Image("sprites/p1_2.png");
+	//static Image p1_3 = new Image("sprites/p1_3.png");
 	
 	// P2 images
-	static Image p2_0 = new Image("sprites/p2_0.gif");
-	static Image p2_1 = new Image("sprites/p2_1.gif");
-	static Image p2_2 = new Image("sprites/p2_2.gif");
-	static Image p2_3 = new Image("sprites/p2_3.gif");
-	
+//	static Image p2_0 = new Image("sprites/p2_0.png");
+//	static Image p2_1 = new Image("sprites/p2_1.png");
+//	static Image p2_2 = new Image("sprites/p2_2.png");
+//	static Image p2_3 = new Image("sprites/p2_3.png");
+
 	Image img;
-	Player(int x1, int y1, int d, String p) {
+	Player(int x1, int y1, int d, Color c) {
 		x = x1;
 		y = y1;
 		dir = d;
-		if(p.equals("p1")) {
-			img = p1_0;
-		}
-		else if(p.equals("p2")) {
-			img = p2_0;
-		}
+		color = c;
+		
+//		if(p.equals("p1")) {
+//			img = p1_0;
+//		}
+//		else if(p.equals("p2")) {
+//			img = p1_0;
+//		}
 	}
 
 	public void turnLeft() {
@@ -55,7 +57,8 @@ public class Player {
 	public void render(GraphicsContext gc) {
 		int px = Grab.CELLSIZE * x;
 		int py = Grab.CELLSIZE * y;
-		gc.drawImage(img,px, py, Grab.CELLSIZE - 1, Grab.CELLSIZE - 1);
+		gc.setFill(color);
+		gc.fillOval(px, py, Grab.CELLSIZE - 1, Grab.CELLSIZE - 1);
 	//	gc.fillOval(px, py, Grab.CELLSIZE - 1, Grab.CELLSIZE - 1);
 		
 		gc.setFill(Color.BLACK);

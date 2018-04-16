@@ -6,17 +6,22 @@ public class GameGroup extends Thread {
 	GameClientThread arr[];
 	final int SIZE=2;
 
-	int grid[][];  //map of the board
+	static int grid[][];  //map of the board
 	//int grabbed[][];	// map of grabbed coins
 	int coins;
 	public static final int GWD=12; // width
 	public static final int GHT=10; // and height of board
 	Player red, blue;  //The two players
 	public static boolean grabit = false;
+	public static int tnt_total = 4;
 	
-	// Init to 100 because 0 would ruin my coin-rendering logic (see Grab.java)
+	// Init coin position
 	public static int     coin_x = 0;
 	public static int     coin_y = 0;
+	
+	// Init wall (blocking) position
+	public static int     wall_x = 0;
+	public static int     wall_y = 0;
 
 	GameGroup ( Socket s ) {
 		arr = new GameClientThread[SIZE];
@@ -176,15 +181,14 @@ public class GameGroup extends Thread {
 		 * and facing. Does nothing if there is no such coin. 
 		 */
 		else if(cmd.equals("trygrab")) {
-			output("trying to grab...,"+pname+","+p.x+","+p.y+","+p.dir);
 			
 			// Helper function checks if a coin on the grid is adjacent to the player:
 			if(adjCoin(p)) {
 				coins++;
-				output("grab it!,"+pname+","+p.x+","+p.y+","+p.dir+",coins: "+coins);
+				output("grabbed,"+pname+","+coin_x+","+coin_y);
 			}
 			else {
-				output("couldn't grab!,"+pname+","+p.x+","+p.y+","+p.dir);
+				output("nograb!,"+pname+","+p.x+","+p.y+","+p.dir);
 			}
 		}
 		
@@ -193,8 +197,22 @@ public class GameGroup extends Thread {
 		 * facing and removes the block from the board.
 		 */
 		else if(cmd.equals("tryblast")) {
-			output("trying to blast...,"+pname+","+p.x+","+p.y+","+p.dir);
 			
+			// Helper function checks if a coin on the grid is adjacent to the player:
+						if(adjWall(p)) {
+							output("blasted,"+pname+","+wall_x+","+wall_y);
+						}
+						else {
+							output("noblast!,"+pname+","+p.x+","+p.y+","+p.dir);
+						}
+		}
+		
+		/* btnt catch:
+		 */
+	    if(cmd.equals("tnt")) {
+			System.out.println("HEY1");
+			grid[wall_x][wall_y] = 0;
+			System.out.println("HEY2");
 		}
 	}
 
@@ -222,52 +240,54 @@ public class GameGroup extends Thread {
 	 * Otherwise, return false.
 	 */
 	public boolean adjCoin(Player p) {
-		
-		coin_x = p.x;
-		coin_y = p.y;
+
+				coin_x = p.x;
+				coin_y = p.y;
 		
 				if((grid[p.x + 1][p.y]) == 2 && p.dir == 1) {	// If a coin exists to the right of the player's position, and player is facing rightward
 					coin_x = p.x+1;
-					removeCoin(coin_x, coin_y);
+					grid[coin_x][coin_y] = 0;
 					return true;
 				}else if(grid[p.x - 1][p.y] == 2 && p.dir == 3) { // If a coin exists to the left of the player's position, and player is facing leftward
 					coin_x = p.x-1;
-					removeCoin(coin_x, coin_y);
+					grid[coin_x][coin_y] = 0;
 					return true;
 				}else if(grid[p.x][p.y -1] == 2 && p.dir == 0) { // If a coin exists above the player's position, and player is facing upward
 					coin_y = p.y-1;
-					removeCoin(coin_x, coin_y);
+					grid[coin_x][coin_y] = 0;
 					return true;
 				}else if(grid[p.x][p.y + 1] == 2 && p.dir == 2) { // If a coin exists below the player's position, and player is facing downward
 					coin_y = p.y+1;
-					removeCoin(coin_x, coin_y);
+					grid[coin_x][coin_y] = 0;
 					return true;
 				}
 		
 		return false;
 	}
 	
-	/* Removes a coin from the grid. Grid == 0, render white "walkable" square.
-	 * 										1		  gray blocking square.
-	 * 										2		  orange coin.
-	 * Given coin coordinates (x, y), this helper function removes a coin from the playing grid.
-	 * by setting that cell value from 2 to 0.
-	 * Then, set grabit flag to true (to stop rendering coin).
+	/* adjWall: A subroutine.
+	 * Return true if a wall exists adjacent to the player in any of the four directions.
+	 * Otherwise, return false.
 	 */
-	public void removeCoin(int x, int y){
+	public boolean adjWall(Player p) {
+
+				wall_x = p.x;
+				wall_y = p.y;
+				
+				if((grid[p.x + 1][p.y]) == 1 && p.dir == 1) {	// If a wall exists to the right of the player's position, and player is facing rightward
+					wall_x = p.x+1;
+					return true;
+				}else if(grid[p.x - 1][p.y] == 1 && p.dir == 3) { // If a wall exists to the left of the player's position, and player is facing leftward
+					wall_x = p.x-1;
+					return true;
+				}else if(grid[p.x][p.y -1] == 1 && p.dir == 0) { // If a wall exists above the player's position, and player is facing upward
+					wall_y = p.y-1;
+					return true;
+				}else if(grid[p.x][p.y + 1] == 1 && p.dir == 2) { // If a wall exists below the player's position, and player is facing downward
+					wall_y = p.y+1;
+					return true;
+				}
 		
-		grid[x][y] = 0;			// Make previous coin cell "walkable"
-        grabbed(grid, x, y);	// Call to helper function below
-		
-	}
-	
-	/* grabbed() subroutine keeps track of the coins that have been grabbed, so that they
-	 * will not be rendered anymore.
-	 */
-	public void grabbed(int grid[][], int x, int y){
-		output( "grabbed x y: " + Grab.grabbed[x][y]);
-		Grab.grabbed = grid;					// Store current array into 'grab' array
-		Grab.grabbed[x][y] = 4;					// Set coin cell to 3 for non-rendering (see Grab.java).
-		output("new grabbed x=" + x + " y=" + y  + " = " + Grab.grabbed[x][y]);
+		return false;
 	}
 }
