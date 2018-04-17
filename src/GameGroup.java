@@ -48,13 +48,13 @@ public class GameGroup extends Thread {
 
 		//Position the two players - Note, we never use	the colors here
 		p = emptySpot();
-		blue = new Player(p.x, p.y, (int)(4*Math.random()), null, null);
+		blue = new Player(p.x, p.y, (int)(4*Math.random()), null);
 
 		// We also need to mark each player's spot in the grid, so we'll
 		// know it's not empty
 		grid[p.x][p.y] = 3;
 		p = emptySpot();
-		red = new Player(p.x, p.y, (int)(4*Math.random()), null, null);
+		red = new Player(p.x, p.y, (int)(4*Math.random()), null);
 		grid[p.x][p.y] = 3;
 
 		//Send each player the config.
@@ -198,21 +198,22 @@ public class GameGroup extends Thread {
 		 */
 		else if(cmd.equals("tryblast")) {
 			
+			System.out.println("TRYBLAST!!");
 			// Helper function checks if a coin on the grid is adjacent to the player:
-						if(adjWall(p)) {
+						if(adjWall(p) && pname.equals("blue") && !Grab.b_no_tnt) {
+							output("blue here!!");
+							grid[wall_x][wall_y] = 0;
+							output("blasted,"+pname+","+wall_x+","+wall_y);
+							
+						}
+						
+						else if(adjWall(p) && pname.equals("red")) {
+							output("red here!!");
+							grid[wall_x][wall_y] = 0;
 							output("blasted,"+pname+","+wall_x+","+wall_y);
 						}
-						else {
+						else 
 							output("noblast!,"+pname+","+p.x+","+p.y+","+p.dir);
-						}
-		}
-		
-		/* btnt catch:
-		 */
-	    if(cmd.equals("tnt")) {
-			System.out.println("HEY1");
-			grid[wall_x][wall_y] = 0;
-			System.out.println("HEY2");
 		}
 	}
 
@@ -288,6 +289,7 @@ public class GameGroup extends Thread {
 					return true;
 				}
 		
+				output("return false!!");
 		return false;
 	}
 }

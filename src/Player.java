@@ -1,5 +1,4 @@
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
 public class Player {
@@ -8,7 +7,6 @@ public class Player {
 	int x, y, tnt;
 	int dir;
 	Color color;
-	Image image;
 	
 	// Directions
 	public static final int UP = 0;
@@ -28,12 +26,11 @@ public class Player {
 //	static Image p2_2 = new Image("sprites/p2_2.png");
 //	static Image p2_3 = new Image("sprites/p2_3.png");
 
-	Player(int x1, int y1, int d, Color c, Image img) {
+	Player(int x1, int y1, int d, Color c) {
 		x = x1;
 		y = y1;
 		dir = d;
 		color = c;
-		image = img;
 		
 //		if(p.equals("p1")) {
 //			img = p1_0;
@@ -59,8 +56,7 @@ public class Player {
 		int px = Grab.CELLSIZE * x;
 		int py = Grab.CELLSIZE * y;
 		gc.setFill(color);
-		gc.drawImage(image,px, py, Grab.CELLSIZE - 1, Grab.CELLSIZE - 1);
-	//	gc.fillOval(px, py, Grab.CELLSIZE - 1, Grab.CELLSIZE - 1);
+		gc.fillOval(px, py, Grab.CELLSIZE - 1, Grab.CELLSIZE - 1);
 		
 		gc.setFill(Color.BLACK);
 		// Direction circles

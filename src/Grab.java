@@ -16,7 +16,6 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -118,8 +117,7 @@ public class Grab extends Application implements Runnable {
 			} else if (cmd.equals("blue")) {
 				try {
 					if (blue == null) {
-					    Image image = new Image("p1_0.png");
-						blue = new Player(0, 0, 0, Color.BLUE, image);
+						blue = new Player(0, 0, 0, Color.BLUE);
 						//blue = new Player(0, 0, 0, "p1");
 					}
 					blue.x = Integer.valueOf(words[1]).intValue();
@@ -132,8 +130,7 @@ public class Grab extends Application implements Runnable {
 			} else if (cmd.equals("red")) {
 				try {
 					if (red == null) {
-						Image image2 = new Image("p2_0.png");
-						red = new Player(0, 0, 0, Color.RED, image2);
+						red = new Player(0, 0, 0, Color.RED);
 						//red = new Player(0, 0, 0, "p2");
 					}
 					red.x = Integer.valueOf(words[1]).intValue();
@@ -162,30 +159,7 @@ public class Grab extends Application implements Runnable {
 			} // end grabbed command
 			else if (cmd.equals("blasted")) {
 			    try {
-					if(words[1].equals("blue") && !b_no_tnt) {
-							if(btnt < 1)
-								b_no_tnt = true;
-							if(!b_no_tnt) {
-								System.out.println("btnt--");
-								tellServer("tnt");
-								grid[Integer.valueOf(words[2]).intValue()][Integer.valueOf(words[3]).intValue()] = 0;
-								btnt--;
-							}
-					}
-					else if(words[1].equals("red") && !r_no_tnt) {
-							if(rtnt < 1)
-								r_no_tnt = true;
-							if(!r_no_tnt) {
-								System.out.println("rtnt--");
-								tellServer("tnt");
-								grid[Integer.valueOf(words[2]).intValue()][Integer.valueOf(words[3]).intValue()] = 0;
-								rtnt--;
-							}
-					}
-					else { // If either player has no TNT left after trying to blast, the cell should remain a wall.
-						System.out.println("No tnt on ?");
-						grid[Integer.valueOf(words[2]).intValue()][Integer.valueOf(words[3]).intValue()] = 1;
-					}
+					grid[Integer.valueOf(words[2]).intValue()][Integer.valueOf(words[3]).intValue()] = 0;
 				}	// end try
 				catch(Exception e) {
 				};
