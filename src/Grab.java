@@ -18,6 +18,9 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
+import javafx.scene.media.AudioClip;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -52,9 +55,14 @@ public class Grab extends Application implements Runnable {
 	BufferedReader br = null;
 	String name, theHost = "localhost";
 	int thePort = 2001;
+	int once = 0;
+	int once2 = 0;
 	
 	Font font = Font.font("Helvetica", FontWeight.BOLD, 15);
 	Image lilypad, dragonfly, p1, p2;
+	Media forest_noise;
+	AudioClip eat;
+	MediaPlayer media;
 
 	void initialize() {
 		makeContact();
@@ -69,6 +77,8 @@ public class Grab extends Application implements Runnable {
 		dragonfly  = new Image("file:src/sprites/dragonfly.gif");
 		p1  = new Image("file:src/sprites/p1_0.png");
 		p2  = new Image("file:src/sprites/p2_0.png");
+		forest_noise = new Media(ClassLoader.getSystemResource("audio/forest_noise.mp3").toString());
+		eat = new AudioClip(ClassLoader.getSystemResource("audio/bite.mp3").toString());
 		render(gc);
 	}
 
@@ -225,6 +235,15 @@ public class Grab extends Application implements Runnable {
 			gc.setFill(Color.BLACK);
 			gc.fillText("Waiting...", 50, 50);
 		} else {
+			
+			if(once < 1) {
+				once++;
+		    	media = new MediaPlayer(forest_noise);
+				media.setCycleCount(5);
+				media.play();
+				media.setVolume(0.7);
+			}
+			
 			// Draw board
 			for (x = 0; x < GameGroup.GWD; x++)
 				for (y = 0; y < GameGroup.GHT; y++) {
