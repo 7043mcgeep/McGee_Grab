@@ -16,8 +16,11 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import java.net.*;
 import java.io.*;
@@ -49,6 +52,9 @@ public class Grab extends Application implements Runnable {
 	BufferedReader br = null;
 	String name, theHost = "localhost";
 	int thePort = 2001;
+	
+	Font font = Font.font("Helvetica", FontWeight.BOLD, 15);
+	Image lilypad, dragonfly, p1, p2;
 
 	void initialize() {
 		makeContact();
@@ -58,6 +64,11 @@ public class Grab extends Application implements Runnable {
 		kicker.setPriority(Thread.MIN_PRIORITY);
 		kicker.setDaemon(true);
 		kicker.start();
+		
+		lilypad = new Image("file:src/sprites/lilypad.png");
+		dragonfly  = new Image("file:src/sprites/dragonfly.gif");
+		p1  = new Image("file:src/sprites/p1_0.png");
+		p2  = new Image("file:src/sprites/p2_0.png");
 		render(gc);
 	}
 
@@ -117,7 +128,7 @@ public class Grab extends Application implements Runnable {
 			} else if (cmd.equals("blue")) {
 				try {
 					if (blue == null) {
-						blue = new Player(0, 0, 0, Color.BLUE);
+						blue = new Player(0, 0, 0, p1);
 						//blue = new Player(0, 0, 0, "p1");
 					}
 					blue.x = Integer.valueOf(words[1]).intValue();
@@ -130,7 +141,7 @@ public class Grab extends Application implements Runnable {
 			} else if (cmd.equals("red")) {
 				try {
 					if (red == null) {
-						red = new Player(0, 0, 0, Color.RED);
+						red = new Player(0, 0, 0, p2);
 						//red = new Player(0, 0, 0, "p2");
 					}
 					red.x = Integer.valueOf(words[1]).intValue();
@@ -208,24 +219,20 @@ public class Grab extends Application implements Runnable {
 	public void render(GraphicsContext gc) {
 		int x, y;
 
-		gc.setFill(Color.WHITE);
+		gc.setFill(Color.rgb(66, 134, 244));
 		gc.fillRect(0, 0, WIDTH, HEIGHT);
 		if (!setup) {
 			gc.setFill(Color.BLACK);
 			gc.fillText("Waiting...", 50, 50);
 		} else {
 			// Draw board
-			gc.setFill(Color.WHITE);
-			gc.fillRect(0, 0, WIDTH, HEIGHT);
 			for (x = 0; x < GameGroup.GWD; x++)
 				for (y = 0; y < GameGroup.GHT; y++) {
 					if (grid[x][y] == 1) {
-						gc.setFill(Color.GREEN);
-						gc.fillRect(CELLSIZE * x, CELLSIZE * y, CELLSIZE - 1, CELLSIZE - 1);
+						gc.drawImage(lilypad, CELLSIZE * x, CELLSIZE * y, CELLSIZE - 1, CELLSIZE - 1);
 					}
 					else if (grid[x][y] == 2) {
-						gc.setFill(Color.ORANGE);
-						gc.fillOval(CELLSIZE * x + 2, CELLSIZE * y + 2, CELLSIZE - 4, CELLSIZE - 4);
+						gc.drawImage(dragonfly, CELLSIZE * x + 2, CELLSIZE * y + 2, CELLSIZE - 4, CELLSIZE - 4);
 					}
 				}
 			gc.setStroke(Color.BLACK);
@@ -236,13 +243,14 @@ public class Grab extends Application implements Runnable {
 			if (red != null)
 				red.render(gc);
 		}
+		gc.setFont(font);
 		gc.setFill(Color.BLUE);
-		gc.fillText("P1:\nCoins:"+bcoins, 50, 50);
-		gc.fillText("TNT:"+btnt, 50, 80);
+		gc.fillText("P1:\nFlies: "+bcoins, 50, 50);
+		gc.fillText("TNT: "+btnt, 50, 80);
 		
 		gc.setFill(Color.RED);
-		gc.fillText("P2:\nCoins:"+rcoins, WIDTH-100, 50);
-		gc.fillText("TNT:"+rtnt, WIDTH-100, 80);
+		gc.fillText("P2:\nFlies: "+rcoins, WIDTH-100, 50);
+		gc.fillText("TNT: "+rtnt, WIDTH-100, 80);
 	}
 
 	public void tellServer(String msg) {
